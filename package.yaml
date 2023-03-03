@@ -51,6 +51,8 @@ dependencies:
 - generic-persistence
 - HDBC-sqlite3
 - HDBC
+- monad-control
+- resource-pool
 
 ghc-options:
 - -Wall
@@ -89,4 +91,3 @@ tests:
     - servant-gp
     - hspec
     - hspec-wai
-    #- hspec-wai-json

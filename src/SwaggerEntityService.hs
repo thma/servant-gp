@@ -17,7 +17,7 @@ import           Data.Swagger             hiding (port)
 import           Entities                 (User (..))
 import           EntityService            (UserAPI, userAPI, userServer)
 import           Network.Wai
-import           Network.Wai.Handler.Warp
+import           Network.Wai.Handler.Warp ( run )
 import           Servant
 import           Servant.Swagger
 import           Servant.Swagger.UI

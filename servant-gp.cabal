@@ -25,6 +25,8 @@ source-repository head
 
 library
   exposed-modules:
+      Api
+      App
       Description
       Entities
       EntityService
@@ -49,8 +51,10 @@ library
     , http-types
     , lens
     , libiserv
+    , monad-control
     , mtl
     , process
+    , resource-pool
     , servant
     , servant-docs
     , servant-exceptions
@@ -89,8 +93,10 @@ executable servant-gp-exe
     , http-types
     , lens
     , libiserv
+    , monad-control
     , mtl
     , process
+    , resource-pool
     , servant
     , servant-docs
     , servant-exceptions
@@ -133,8 +139,10 @@ test-suite servant-gp-test
     , http-types
     , lens
     , libiserv
+    , monad-control
     , mtl
     , process
+    , resource-pool
     , servant
     , servant-docs
     , servant-exceptions

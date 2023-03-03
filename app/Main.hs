@@ -5,6 +5,10 @@ module Main
 where
 
 import           SwaggerEntityService
+import App
 
 main :: IO ()
-main = SwaggerEntityService.up
+main = demo
+
+--main :: IO ()
+--main = SwaggerEntityService.up

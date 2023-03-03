@@ -6,7 +6,7 @@ module EntityService
     userAPI, 
     userServer,
     app,
-    demo,
+    --demo,
   )
 
 where
@@ -21,7 +21,7 @@ import           Description                (Desc)
 import           Entities
 import           Network.HTTP.Types.Status  (status404, status409, status500)
 import           Network.Wai
-import           Network.Wai.Handler.Warp
+--import           Network.Wai.Handler.Warp
 import           Servant
 import           Servant.Exception          (ToServantErr, status)
 
@@ -161,8 +161,8 @@ userAPI = Proxy
 app :: Application
 app = serve userAPI userServer
 
-demo :: IO ()
-demo = do
-  let port = 8080
-  putStrLn $ "starting userAPI on port " ++ show port
-  run port app
+--demo :: IO ()
+--demo = do
+--  let port = 8080
+--  putStrLn $ "starting userAPI on port " ++ show port
+--  run port app
