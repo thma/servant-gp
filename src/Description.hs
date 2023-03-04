@@ -2,7 +2,7 @@
 {-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Description (Desc) where
+module Description (Describe) where
 
 import           Data.Kind    (Type)
 import           GHC.Generics (D1, Meta (..), Rep)
@@ -17,4 +17,4 @@ type family TypeName (x :: Type) :: Symbol where
 type family GenericTypeName t (r :: Type) :: Symbol where
   GenericTypeName t (D1 ('MetaData name mod pkg nt) f x) = name
 
-type Desc t n = Description (AppendSymbol (TypeName t) (AppendSymbol " | " n))
+type Describe t n = Description (AppendSymbol (TypeName t) (AppendSymbol " | " n))

@@ -20,16 +20,17 @@ import           Models
 import           Data.Pool
 import           Database.GP
 import           Database.HDBC.Sqlite3 (connectSqlite3)
-import           Database.HDBC (disconnect)
+import           Database.HDBC (disconnect, toSql)
 
 type ConnectionPool = Pool Conn
 
 userServer :: ConnectionPool -> Server UserAPI
 userServer pool =
-  getAllUsersH :<|> getUserH :<|> postUserH :<|> putUserH :<|> deleteUserH
+  getAllUsersH :<|> getUserH :<|> getUserCommentsH :<|> postUserH :<|> putUserH :<|> deleteUserH
   where
     getAllUsersH = liftIO getAllUsers           -- GET /users
     getUserH idx = liftIO $ getUser idx           -- GET /users/{id}
+    getUserCommentsH idx = liftIO $ getUserComments idx -- GET /users/{id}/comments
     postUserH user = liftIO $ postUser user     -- POST /users
     putUserH idx user = liftIO $ putUser idx user -- PUT /users/{id}
     deleteUserH idx = liftIO $ deleteUser idx     -- DELETE /users/{id}
@@ -45,6 +46,10 @@ userServer pool =
 
     getUser :: Id -> IO (Maybe User)
     getUser = withConn retrieveById
+
+    getUserComments :: Id -> IO [Comment]
+    getUserComments idx = withPooledConn $ \conn ->
+      retrieveAllWhere conn "userRef" (toSql idx)  -- select * from comments where userRef = idx
 
     postUser :: User -> IO ()
     postUser = withConn insert

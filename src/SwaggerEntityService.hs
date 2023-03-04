@@ -14,24 +14,29 @@ where
 import           Control.Lens
 import           Data.Aeson               (toJSON)
 import           Data.Swagger             hiding (port)
-import           Models                 (User (..))
---import           EntityService            (UserAPI, userAPI, userServer)
+import           Models                
 import UserApi ( UserAPI, userAPI )
 import UserServer ( ConnectionPool, userServer, sqlLitePool )
-import           Network.Wai
 import           Network.Wai.Handler.Warp ( run )
 import           Servant
 import           Servant.Swagger
 import           Servant.Swagger.UI
 import           System.Info              (os)
 import           System.Process           (createProcess, shell)
+import Data.Text (unpack)
 
 -- | Swagger spec of Model type 'User'
 instance ToSchema User where
   declareNamedSchema proxy =
     genericDeclareNamedSchema defaultSchemaOptions proxy
-      & mapped . schema . description ?~ "This is a User API (tm)"
+      & mapped . schema . description ?~ "This is the schema for model type User"
       & mapped . schema . example ?~ toJSON (User 4711 "Max Muster" "mm@muster.com")
+
+instance ToSchema Comment where
+  declareNamedSchema proxy =
+    genericDeclareNamedSchema defaultSchemaOptions proxy
+      & mapped . schema . description ?~ "This is the schema for model type Comment"
+      & mapped . schema . example ?~ toJSON (Comment 1 1 2 "A comment for a blog post.")
 
 -- | Swagger spec for user API.
 swaggerDoc :: Swagger
@@ -39,7 +44,7 @@ swaggerDoc =
   toSwagger userAPI
     & info . title .~ "User API"
     & info . version .~ "1.23"
-    & info . description ?~ "This is an API that tests swagger integration"
+    & info . description ?~ "This is an API for users, their blogs and their comments."
     & info . license ?~ ("APACHE 2.0" & url ?~ URL "http://apache.org")
 
 -- | API type with bells and whistles, i.e. schema file and swagger-ui.
@@ -70,6 +75,7 @@ up = do
   putStrLn $ "GET all users: http://localhost:" ++ show port ++ "/users"
   putStrLn $ "GET user 1:    http://localhost:" ++ show port ++ "/users/1"
   putStrLn $ "Swagger UI:    http://localhost:" ++ show port ++ "/swagger-ui"
+  putStrLn $ unpack $ layout userAPI
   launchSiteInBrowser port
   run port (app pool)
 
