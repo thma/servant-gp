@@ -14,7 +14,6 @@ import           Data.Pool
 import           Database.GP
 import           Database.HDBC.Sqlite3 (connectSqlite3)
 import           Database.HDBC (disconnect)
-import           Data.Maybe
 
 type ConnectionPool = Pool Conn
 
@@ -23,30 +22,33 @@ server pool =
   getAllUsersH :<|> getUserH :<|> postUserH :<|> putUserH :<|> deleteUserH
   where
     getAllUsersH = liftIO getAllUsers           -- GET /users
-    getUserH id = liftIO $ getUser id           -- GET /users/{id}
+    getUserH idx = liftIO $ getUser idx           -- GET /users/{id}
     postUserH user = liftIO $ postUser user     -- POST /users
-    putUserH id user = liftIO $ putUser id user -- PUT /users/{id}
-    deleteUserH id = liftIO $ deleteUser id     -- DELETE /users/{id}
+    putUserH idx user = liftIO $ putUser idx user -- PUT /users/{id}
+    deleteUserH idx = liftIO $ deleteUser idx     -- DELETE /users/{id}
 
     withPooledConn :: (Conn -> IO a) -> IO a
     withPooledConn = withResource pool
 
+    withConn :: (Conn -> b -> IO a) -> b -> IO a
+    withConn f b = withResource pool (`f` b)
+
     getAllUsers :: IO [User]
     getAllUsers = withPooledConn retrieveAll
 
-    getUser :: Id -> IO User
-    getUser idx = fromJust <$> withPooledConn (`retrieveById` idx)
+    getUser :: Id -> IO (Maybe User)
+    getUser = withConn retrieveById
 
     postUser :: User -> IO ()
-    postUser user = withPooledConn (`insert` user)
+    postUser = withConn insert
 
     putUser :: Id -> User -> IO ()
-    putUser _id user = withPooledConn (`update` user)
+    putUser _id = withConn update
 
     deleteUser :: Id -> IO ()
-    deleteUser id = withPooledConn (`delete` user)
-          where
-            user = User id "name" "email"
+    deleteUser idx = withConn delete user
+      where
+        user = User idx "name" "email"
 
 
 app :: ConnectionPool -> Application

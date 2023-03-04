@@ -1,6 +1,4 @@
 {-# LANGUAGE DataKinds         #-}
---{-# LANGUAGE OverloadedStrings #-}
---{-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE TypeFamilies      #-}
 {-# LANGUAGE TypeOperators     #-}
 module Api 
@@ -10,10 +8,8 @@ module Api
   )
 where
   
-import Data.Text  
 import Data.Proxy
 import Servant.API
---import Servant.API.Description
 import Description
 import Entities
 
@@ -24,7 +20,7 @@ type UserAPI = --Throws PersistenceException :>
                :> Get '[ JSON] [User]
   :<|> "users" :> Summary "retrieve user identified by :id"
                :> Capture' '[Desc Id "unique identifier"] ":id" Id
-               :> Get  '[ JSON] User
+               :> Get  '[ JSON] (Maybe User)
   :<|> "users" :> Summary "store a new user"
                :> ReqBody '[ JSON] User
                :> Post '[ JSON] ()
