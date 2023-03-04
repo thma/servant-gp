@@ -2,14 +2,21 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies      #-}
 
-module App where
+module UserServer 
+  ( userServer,
+    demo,
+    ConnectionPool,
+    sqlLitePool,
+    setUpSchema
+  ) 
+where
 
 import           Control.Monad.IO.Class (liftIO)
 import           Network.Wai.Handler.Warp ( run )
 
 import           Servant
-import           Api
-import           Entities
+import           UserApi
+import           Models
 import           Data.Pool
 import           Database.GP
 import           Database.HDBC.Sqlite3 (connectSqlite3)
@@ -17,8 +24,8 @@ import           Database.HDBC (disconnect)
 
 type ConnectionPool = Pool Conn
 
-server :: ConnectionPool -> Server UserAPI
-server pool =
+userServer :: ConnectionPool -> Server UserAPI
+userServer pool =
   getAllUsersH :<|> getUserH :<|> postUserH :<|> putUserH :<|> deleteUserH
   where
     getAllUsersH = liftIO getAllUsers           -- GET /users
@@ -51,16 +58,17 @@ server pool =
         user = User idx "name" "email"
 
 
-app :: ConnectionPool -> Application
-app pool = serve userAPI $ server pool
-
-mkApp :: FilePath -> IO Application
-mkApp sqliteFile = do
-  pool <- createPool freshConnection disconnect 1 10 10
-  return $ app pool
+sqlLitePool :: FilePath -> IO ConnectionPool
+sqlLitePool sqliteFile = createPool freshConnection disconnect 1 10 10
   where
     freshConnection :: IO Conn
     freshConnection = connect SQLite <$> connectSqlite3 sqliteFile
+
+mkApp :: FilePath -> IO Application
+mkApp sqliteFile = do
+  pool <- sqlLitePool sqliteFile
+  return $ serve userAPI $ userServer pool
+
 
 
 demo :: IO ()
@@ -69,3 +77,18 @@ demo = do
   putStrLn $ "starting userAPI on port " ++ show port
   a <- mkApp "sqlite.db"
   run port a
+
+setUpSchema :: IO ()
+setUpSchema = do
+  conn <- connect SQLite <$> connectSqlite3 "sqlite.db"
+  setupTableFor @User conn
+  setupTableFor @BlogPost conn
+  setupTableFor @Comment conn
+
+  let users = [User 1 "Alice" "alice@mail.com", User 2 "Bob" "bob@mail.com"]
+  let posts = [BlogPost 1 1 "A text by Alice", BlogPost 2 2 "Bobs first post"]
+  let comments = [Comment 1 2 1 "Alice' comment", Comment 2 1 2 "Bob's comment"]
+
+  insertMany conn users
+  insertMany conn posts
+  insertMany conn comments

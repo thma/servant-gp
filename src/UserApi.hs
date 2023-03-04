@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE TypeFamilies      #-}
 {-# LANGUAGE TypeOperators     #-}
-module Api 
+module UserApi 
   (
   UserAPI,
   userAPI,  
@@ -11,7 +11,7 @@ where
 import Data.Proxy
 import Servant.API
 import Description
-import Entities
+import Models
 
 -- | REST api for User Entities
 type UserAPI = --Throws PersistenceException :>

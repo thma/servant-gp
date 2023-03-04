@@ -14,8 +14,10 @@ where
 import           Control.Lens
 import           Data.Aeson               (toJSON)
 import           Data.Swagger             hiding (port)
-import           Entities                 (User (..))
-import           EntityService            (UserAPI, userAPI, userServer)
+import           Models                 (User (..))
+--import           EntityService            (UserAPI, userAPI, userServer)
+import UserApi ( UserAPI, userAPI )
+import UserServer ( ConnectionPool, userServer, sqlLitePool )
 import           Network.Wai
 import           Network.Wai.Handler.Warp ( run )
 import           Servant
@@ -41,34 +43,35 @@ swaggerDoc =
     & info . license ?~ ("APACHE 2.0" & url ?~ URL "http://apache.org")
 
 -- | API type with bells and whistles, i.e. schema file and swagger-ui.
-type API = SwaggerSchemaUI "swagger-ui" "swagger.json" :<|> UserAPI
+type SwaggerAPI = SwaggerSchemaUI "swagger-ui" "swagger.json" :<|> UserAPI
 
 -- | boilerplate to guide type inference
-api :: Proxy API
-api = Proxy
+swaggerAPI :: Proxy SwaggerAPI
+swaggerAPI = Proxy
 
 -- | Servant server for an API
-server :: Server API
-server =
+server :: ConnectionPool -> Server SwaggerAPI
+server pool =
   swaggerSchemaUIServer
     swaggerDoc
-    :<|> userServer
+    :<|> userServer pool
 
 -- | 'serve' comes from servant and hands you a WAI Application,
 -- which you can think of as an "abstract" web application,
 -- not yet a webserver.
-app :: Application
-app = serve api server
+app :: ConnectionPool -> Application
+app pool = serve swaggerAPI (server pool)
 
 -- | start up server and launch browser on swagger UI
 up :: IO ()
 up = do
   let port = 8080
+  pool <- sqlLitePool "sqlite.db"
   putStrLn $ "GET all users: http://localhost:" ++ show port ++ "/users"
   putStrLn $ "GET user 1:    http://localhost:" ++ show port ++ "/users/1"
   putStrLn $ "Swagger UI:    http://localhost:" ++ show port ++ "/swagger-ui"
   launchSiteInBrowser port
-  run port app
+  run port (app pool)
 
 -- | convenience function that opens the swagger UI in the default web browser
 launchSiteInBrowser :: Int -> IO ()

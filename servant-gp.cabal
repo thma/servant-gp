@@ -25,12 +25,11 @@ source-repository head
 
 library
   exposed-modules:
-      Api
-      App
       Description
-      Entities
-      EntityService
+      Models
       SwaggerEntityService
+      UserApi
+      UserServer
   other-modules:
       Paths_servant_gp
   hs-source-dirs:

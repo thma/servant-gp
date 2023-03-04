@@ -1,19 +1,17 @@
 {-# LANGUAGE DeriveAnyClass        #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 
-module Entities
+module Models
   ( Id,
     User (..),
     BlogPost (..),
     Comment (..),
-    setUpSchema,
   )
 where
 
-import           Data.Aeson
-import           Database.GP
-import           Database.HDBC.Sqlite3
-import           GHC.Generics
+import           Data.Aeson ( FromJSON, ToJSON )
+import           Database.GP (Entity)
+import           GHC.Generics ( Generic )
 
 type Id = Int
 
@@ -39,9 +37,3 @@ data Comment = Comment
   }
   deriving (Show, Read, Generic, Entity, ToJSON, FromJSON)
 
-setUpSchema :: IO ()
-setUpSchema = do
-  conn <- connect SQLite <$> connectSqlite3 "sqlite.db"
-  setupTableFor @User conn
-  setupTableFor @BlogPost conn
-  setupTableFor @Comment conn
