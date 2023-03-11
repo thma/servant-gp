@@ -1,6 +1,8 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE TypeFamilies      #-}
 {-# LANGUAGE TypeOperators     #-}
+
+
 module UserApi 
   (
   UserAPI,
@@ -10,7 +12,6 @@ where
   
 import Data.Proxy
 import Servant.API
---import Servant.API.Description
 import Description
 import Models
 
@@ -21,12 +22,11 @@ type UserAPI = --Throws PersistenceException :>
                :> Get '[ JSON] [User]
   :<|> "users" :> Summary "retrieve user identified by :id"
                :> Capture' '[Describe Id "unique User identifier"] ":id" Id
-               :> Get  '[ JSON] (Maybe User)
+               :> Get  '[ JSON] User
   :<|> "users" :> Summary "retrieve comments identified by user :id"
                :> Capture' '[Describe Id "unique User identifier"] ":id" Id
                :> "comments" 
                :> Get  '[ JSON] [Comment]
-               -- :> Get  '[ JSON] (Maybe User)  
   :<|> "users" :> Summary "store a new user"
                :> ReqBody '[ JSON] User
                :> Post '[ JSON] ()
@@ -41,3 +41,5 @@ type UserAPI = --Throws PersistenceException :>
 -- | boilerplate to guide type inference
 userAPI :: Proxy UserAPI
 userAPI = Proxy
+
+

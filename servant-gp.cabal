@@ -27,6 +27,7 @@ library
   exposed-modules:
       Description
       Models
+      SgpExceptionWrapper
       SwaggerEntityService
       UserApi
       UserServer
