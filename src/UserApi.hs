@@ -12,17 +12,16 @@ where
   
 import Data.Proxy
 import Servant.API
-import Description
+import Description (Describe)
 import Models
 
 -- | REST api for User Entities
 type UserAPI = --Throws PersistenceException :>
        "users" :> Summary "retrieve all users"
-               -- :> QueryParam' '[Optional, Describe Int "max number of records to load"] "maxRecords" Int
                :> Get '[ JSON] [User]
   :<|> "users" :> Summary "retrieve user identified by :id"
                :> Capture' '[Describe Id "unique User identifier"] ":id" Id
-               :> Get  '[ JSON] User
+               :> Get  '[ JSON] (Maybe User)
   :<|> "users" :> Summary "retrieve comments identified by user :id"
                :> Capture' '[Describe Id "unique User identifier"] ":id" Id
                :> "comments" 

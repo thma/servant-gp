@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies      #-}
+{-# LANGUAGE LambdaCase #-}
 
 module UserServer 
   ( userServer,
@@ -11,19 +12,18 @@ module UserServer
   ) 
 where
 
-import           Control.Monad.IO.Class
+import           Control.Monad.IO.Class ( MonadIO(liftIO) )
 import           Network.Wai.Handler.Warp ( run )
 import           Control.Monad.Error.Class  (MonadError)
 import           Servant
-import           UserApi
+import           UserApi ( userAPI, UserAPI )
 import           Models
-import           Data.Pool
-import           Database.GP (Conn, connect, Database(..))
-import           SgpExceptionWrapper
+import           Data.Pool ( createPool, withResource, Pool )
 import           Database.HDBC.Sqlite3 (connectSqlite3)
 import           Database.HDBC (disconnect, toSql)
-import Control.Exception ( try )
-import Data.ByteString.Lazy.Char8 (pack)
+import           Control.Exception ( try )
+import           Data.ByteString.Lazy.Char8 (pack)
+import           Database.GP.GenericPersistence
 
 type ConnectionPool = Pool Conn
 
@@ -34,7 +34,7 @@ userServer pool =
     getAllUsersH :: Handler [User]
     getAllUsersH = handleWithConn retrieveAll           -- GET /users
 
-    getUserH :: Id -> Handler User
+    getUserH :: Id -> Handler (Maybe User)
     getUserH idx = handleWithConn (`retrieveById` idx)  -- GET /users/{id}
 
     getUserCommentsH :: Id -> Handler [Comment]
@@ -62,12 +62,11 @@ userServer pool =
 
 -- | throw a persistence exception as a Servant ServerError
 throwAsServerError :: MonadError ServerError m => PersistenceException -> m a
-throwAsServerError ex =
-  throwError $
-    case ex of
-      EntityNotFound msg      -> err404 {errBody = format msg}
-      EntityAlreadyExists msg -> err409 {errBody = format msg}
-      InternalError msg       -> err500 {errBody = format msg}
+throwAsServerError pex = throwError $ case pex of
+  EntityNotFound msg  -> err404 {errBody = format msg}
+  DuplicateInsert msg -> err409 {errBody = format msg}
+  DatabaseError msg   -> err500 {errBody = format msg}
+  NoUniqueKey msg     -> err500 {errBody = format msg}
   where 
     format msg = pack $ "{ \"error\": \"" ++ msg ++ "\" }"
 
@@ -105,3 +104,5 @@ setUpSchema = do
   insertMany conn users
   insertMany conn posts
   insertMany conn comments
+
+  pure ()
