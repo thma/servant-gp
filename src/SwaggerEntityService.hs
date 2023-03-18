@@ -3,9 +3,8 @@
 {-# LANGUAGE TypeOperators     #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module SwaggerEntityService 
-  (
-    up,
+module SwaggerEntityService
+  ( up,
     app,
     launchSiteInBrowser,
   )
@@ -14,15 +13,16 @@ where
 import           Control.Lens
 import           Data.Aeson               (toJSON)
 import           Data.Swagger             hiding (port)
-import           Models                
-import UserApi ( UserAPI, userAPI )
-import UserServer ( ConnectionPool, userServer, sqlLitePool )
-import           Network.Wai.Handler.Warp ( run )
+import           Models
+import           Network.Wai.Handler.Warp (run)
 import           Servant
 import           Servant.Swagger
 import           Servant.Swagger.UI
 import           System.Info              (os)
 import           System.Process           (createProcess, shell)
+import           UserApi                  (UserAPI, userAPI)
+import           UserServer               (ConnectionPool, sqlLitePool,
+                                           userServer)
 
 -- | Swagger spec of Model type 'User'
 instance ToSchema User where
@@ -70,11 +70,10 @@ app pool = serve swaggerAPI (server pool)
 up :: IO ()
 up = do
   let port = 8080
-  pool <- sqlLitePool "sqlite.db"
+  pool <- sqlLitePool "sqlite.db" -- create a connection pool
   putStrLn $ "GET all users: http://localhost:" ++ show port ++ "/users"
   putStrLn $ "GET user 1:    http://localhost:" ++ show port ++ "/users/1"
   putStrLn $ "Swagger UI:    http://localhost:" ++ show port ++ "/swagger-ui"
-  --putStrLn $ unpack $ layout userAPI
   launchSiteInBrowser port
   run port (app pool)
 
@@ -84,8 +83,8 @@ launchSiteInBrowser port = do
   _ <- openUrlWith command
   return ()
   where
-    swaggerUrl = "http://localhost:" ++ show port ++ "/swagger-ui"
     openUrlWith cmd = createProcess (shell $ cmd ++ " " ++ swaggerUrl)
+    swaggerUrl = "http://localhost:" ++ show port ++ "/swagger-ui"
     command = case os of
       "mingw32" -> "start"
       "darwin"  -> "open"
