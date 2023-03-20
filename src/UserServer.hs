@@ -11,7 +11,7 @@ module UserServer
   )
 where
 
-import           Control.Exception              (try)
+import           Control.Exception              (try, throw)
 import           Control.Monad.Error.Class      (MonadError)
 import           Control.Monad.IO.Class         (MonadIO (liftIO))
 import           Data.ByteString.Lazy.Char8     (pack)
@@ -33,9 +33,16 @@ userServer pool =
     getAllUsersH :: Handler [User]
     getAllUsersH = handleWithConn retrieveAll          -- GET /users
     
-    getUserH :: Id -> Handler (Maybe User)
-    getUserH idx = handleWithConn (`retrieveById` idx) -- GET /users/{id}
-    
+    getUserH :: Id -> Handler User
+    getUserH idx = handleWithConn $ nothingToPex (`retrieveById` idx) -- GET /users/{id}
+      where
+        nothingToPex :: (Conn -> IO (Maybe a)) -> Conn -> IO a
+        nothingToPex gpAction conn = do
+          maybeUser <- gpAction conn
+          case maybeUser of
+            Nothing -> throw $ EntityNotFound "User not found"
+            Just u  -> return u
+
     getUserCommentsH :: Id -> Handler [Comment]
     getUserCommentsH idx = handleWithConn $ \conn ->
       retrieveAllWhere conn "userRef" (toSql idx)      -- GET /users/{id}/comments
@@ -61,10 +68,10 @@ userServer pool =
 -- | throw a persistence exception as a Servant ServerError
 throwAsServerError :: MonadError ServerError m => PersistenceException -> m a
 throwAsServerError pex = throwError $ case pex of
-  EntityNotFound msg  -> err404 {errBody = format msg}
-  DuplicateInsert msg -> err409 {errBody = format msg}
-  DatabaseError msg   -> err500 {errBody = format msg}
-  NoUniqueKey msg     -> err500 {errBody = format msg}
+  EntityNotFound msg  -> err404 {errBody = format $ "EntityNotFound: " ++ msg}
+  DuplicateInsert msg -> err409 {errBody = format $ "DuplicateInsert: " ++ msg}
+  DatabaseError msg   -> err500 {errBody = format $ "DatabaseError: " ++ msg}
+  NoUniqueKey msg     -> err500 {errBody = format $ "NoUniqueKey: " ++ msg}
   where
     format msg = pack $ "{ \"error\": \"" ++ msg ++ "\" }"
 

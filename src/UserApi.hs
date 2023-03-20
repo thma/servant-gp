@@ -20,7 +20,7 @@ type UserAPI = --Throws PersistenceException :>
                :> Get '[ JSON] [User]
   :<|> "users" :> Summary "retrieve user identified by :id"
                :> Capture' '[Describe Id "unique User identifier"] ":id" Id
-               :> Get  '[ JSON] (Maybe User)
+               :> Get  '[ JSON] User
   :<|> "users" :> Summary "retrieve comments identified by user :id"
                :> Capture' '[Describe Id "unique User identifier"] ":id" Id
                :> "comments" 
