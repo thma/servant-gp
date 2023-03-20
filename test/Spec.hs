@@ -5,23 +5,26 @@ module Main
   )
 where
 
-import           SwaggerEntityService       (app)
+import           SwaggerEntityService       
 import           Test.Hspec
 import           Test.Hspec.Wai
-import           UserServer (sqlLitePool, setUpSchema, ConnectionPool)
-
+import           ServerUtils
 
 main :: IO ()
 main = hspec spec
 
-prepareDB :: IO ConnectionPool
-prepareDB = do
-  setUpSchema
-  sqlLitePool "sqlite.db"
+db :: FilePath
+db = "sqlite.db"
+ 
+
 
 spec :: Spec
 spec = do
-  with (app <$> prepareDB) $
+  with prepareApp $
     describe "GET /users" $
       it "responds with 200" $
         get "/users" `shouldRespondWith` 200
+  where
+  prepareApp = do
+    setUpSchema db
+    mkApp db swaggerAPI swaggerServer

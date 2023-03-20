@@ -25,11 +25,14 @@ source-repository head
 
 library
   exposed-modules:
+      ConnectionPool
       Description
       Models
+      ServerUtils
       SwaggerEntityService
       UserApi
       UserServer
+      UserServerSafe
   other-modules:
       Paths_servant_gp
   hs-source-dirs:

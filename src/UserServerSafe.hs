@@ -2,23 +2,22 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies      #-}
 
-module UserServer
+module UserServerSafe
   ( userServer,
-    demo
+    demo,
   )
 where
 
-import           Control.Exception              (try, throw)
 import           Control.Monad.Error.Class      (MonadError)
 import           Control.Monad.IO.Class         (MonadIO (liftIO))
 import           Data.ByteString.Lazy.Char8     (pack)
-import           ConnectionPool                 (ConnectionPool, sqlLitePool, withResource)
-import           Database.GP.GenericPersistence
+import           Database.GP.GenericPersistenceSafe
 import           Database.HDBC                  (toSql)
 import           Models
 import           Network.Wai.Handler.Warp       (run)
 import           Servant
 import           UserApi                        (UserAPI, userAPI)
+import           ConnectionPool                 (ConnectionPool, sqlLitePool, withResource)
 
 
 userServer :: ConnectionPool -> Server UserAPI
@@ -29,15 +28,7 @@ userServer pool =
     getAllUsersH = handleWithConn retrieveAll          -- GET /users
     
     getUserH :: Id -> Handler User
-    getUserH idx = handleWithConn $ 
-                    nothingToPex (`retrieveById` idx)  -- GET /users/{id}
-      where
-        nothingToPex :: (Conn -> IO (Maybe a)) -> Conn -> IO a
-        nothingToPex gpAction conn = do
-          maybeUser <- gpAction conn
-          case maybeUser of
-            Nothing -> throw $ EntityNotFound "User not found"
-            Just u  -> return u
+    getUserH idx = handleWithConn (`retrieveById` idx) -- GET /users/{id}
 
     getUserCommentsH :: Id -> Handler [Comment]
     getUserCommentsH idx = handleWithConn $ \conn ->
@@ -54,9 +45,9 @@ userServer pool =
       where
         user = User idx "name" "email"
 
-    handleWithConn :: (Conn -> IO a) -> Handler a
+    handleWithConn :: (Conn -> IO (Either PersistenceException a)) -> Handler a  -- :: (Conn -> IO a) -> Handler a
     handleWithConn gpAction = do
-      eitherExResult <- liftIO $ try $ withResource pool gpAction
+      eitherExResult <- liftIO $ withResource pool gpAction
       case eitherExResult of
         Left pex     -> throwAsServerError pex
         Right result -> return result
@@ -82,4 +73,5 @@ demo = do
   putStrLn $ "starting userAPI on port " ++ show port
   a <- mkApp "sqlite.db"
   run port a
+
 

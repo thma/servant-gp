@@ -5,8 +5,9 @@
 
 module SwaggerEntityService
   ( up,
-    app,
     launchSiteInBrowser,
+    swaggerAPI,
+    swaggerServer,
   )
 where
 
@@ -21,8 +22,9 @@ import           Servant.Swagger.UI
 import           System.Info              (os)
 import           System.Process           (createProcess, shell)
 import           UserApi                  (UserAPI, userAPI)
-import           UserServer               (ConnectionPool, sqlLitePool,
-                                           userServer)
+import           UserServerSafe           
+import           ConnectionPool           (ConnectionPool)
+import           ServerUtils              (mkApp)
 
 -- | Swagger spec of Model type 'User'
 instance ToSchema User where
@@ -54,28 +56,22 @@ swaggerAPI :: Proxy SwaggerAPI
 swaggerAPI = Proxy
 
 -- | Servant server for an API
-server :: ConnectionPool -> Server SwaggerAPI
-server pool =
+swaggerServer :: ConnectionPool -> Server SwaggerAPI
+swaggerServer pool =
   swaggerSchemaUIServer
     swaggerDoc
     :<|> userServer pool
-
--- | 'serve' comes from servant and hands you a WAI Application,
--- which you can think of as an "abstract" web application,
--- not yet a webserver.
-app :: ConnectionPool -> Application
-app pool = serve swaggerAPI (server pool)
 
 -- | start up server and launch browser on swagger UI
 up :: IO ()
 up = do
   let port = 8080
-  pool <- sqlLitePool "sqlite.db" -- create a connection pool
+  app <- mkApp "sqlite.db" swaggerAPI swaggerServer
   putStrLn $ "GET all users: http://localhost:" ++ show port ++ "/users"
   putStrLn $ "GET user 1:    http://localhost:" ++ show port ++ "/users/1"
   putStrLn $ "Swagger UI:    http://localhost:" ++ show port ++ "/swagger-ui"
   launchSiteInBrowser port
-  run port (app pool)
+  run port app
 
 -- | convenience function that opens the swagger UI in the default web browser
 launchSiteInBrowser :: Int -> IO ()
