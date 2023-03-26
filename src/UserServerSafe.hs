@@ -4,21 +4,18 @@
 
 module UserServerSafe
   ( userServer,
-    demo,
+    demoSafe,
   )
 where
 
-import           Control.Monad.Error.Class      (MonadError)
 import           Control.Monad.IO.Class         (MonadIO (liftIO))
-import           Data.ByteString.Lazy.Char8     (pack)
 import           Database.GP.GenericPersistenceSafe
-import           Database.HDBC                  (toSql)
 import           Models
 import           Network.Wai.Handler.Warp       (run)
 import           Servant
 import           UserApi                        (UserAPI, userAPI)
-import           ConnectionPool                 (ConnectionPool, sqlLitePool, withResource)
-
+import           ConnectionPool                 (ConnectionPool, withResource)
+import           ServerUtils
 
 userServer :: ConnectionPool -> Server UserAPI
 userServer pool =
@@ -32,7 +29,7 @@ userServer pool =
 
     getUserCommentsH :: Id -> Handler [Comment]
     getUserCommentsH idx = handleWithConn $ \conn ->
-      retrieveAllWhere conn "userRef" (toSql idx)      -- GET /users/{id}/comments
+      retrieveWhere conn ("userRef" ==. idx)           -- GET /users/{id}/comments
 
     postUserH :: User -> Handler ()
     postUserH user = handleWithConn (`insert` user)    -- POST /users
@@ -52,26 +49,12 @@ userServer pool =
         Left pex     -> throwAsServerError pex
         Right result -> return result
 
--- | throw a persistence exception as a Servant ServerError
-throwAsServerError :: MonadError ServerError m => PersistenceException -> m a
-throwAsServerError pex = throwError $ case pex of
-  EntityNotFound msg  -> err404 {errBody = format $ "EntityNotFound: " ++ msg}
-  DuplicateInsert msg -> err409 {errBody = format $ "DuplicateInsert: " ++ msg}
-  DatabaseError msg   -> err500 {errBody = format $ "DatabaseError: " ++ msg}
-  NoUniqueKey msg     -> err500 {errBody = format $ "NoUniqueKey: " ++ msg}
-  where
-    format msg = pack $ "{ \"error\": \"" ++ msg ++ "\" }"
 
-mkApp :: FilePath -> IO Application
-mkApp sqliteFile = do
-  pool <- sqlLitePool sqliteFile
-  return $ serve userAPI $ userServer pool
-
-demo :: IO ()
-demo = do
+demoSafe :: IO ()
+demoSafe = do
   let port = 8080
   putStrLn $ "starting userAPI on port " ++ show port
-  a <- mkApp "sqlite.db"
+  a <- mkApp "sqlite.db" userAPI userServer
   run port a
 
 
