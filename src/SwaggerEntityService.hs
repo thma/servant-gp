@@ -23,8 +23,8 @@ import           System.Info              (os)
 import           System.Process           (createProcess, shell)
 import           UserApi                  (UserAPI, userAPI)
 import           UserServerSafe           
-import           ConnectionPool           (ConnectionPool)
 import           ServerUtils              (mkApp)
+import           Database.GP              ( ConnectionPool )
 
 -- | Swagger spec of Model type 'User'
 instance ToSchema User where

@@ -12,20 +12,20 @@ packages:
   original:
     hackage: HDBC-sqlite3-2.3.3.1
 - completed:
-    commit: 533089c07fa4576703b588baaaed26ed4ee23546
+    commit: 44f6755bd135b420b32e2549215cfcea70dbba32
     git: https://github.com/thma/generic-persistence.git
     name: generic-persistence
     pantry-tree:
-      sha256: 1ab79f3a0a07db2753161b2789a19bb9cf39573a1af5e6d89131cbbd339aa4c0
-      size: 1656
+      sha256: ce266e20f2fe8b14169d74fd7b450195224939333b105d23bdbb95bde5b6c555
+      size: 1714
     version: 0.3.1.0
   original:
-    commit: 533089c07fa4576703b588baaaed26ed4ee23546
+    commit: 44f6755bd135b420b32e2549215cfcea70dbba32
     git: https://github.com/thma/generic-persistence.git
 snapshots:
 - completed:
-    sha256: bfafe5735ccb74527d754b1f9999ded72d7c3a6c3a88529449661431ccfbd6cc
-    size: 649327
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/8.yaml
+    sha256: 14ca51a9a597c32dd7804c10d079feea3d0ae40c5fbbb346cbd67b3ae49f6d01
+    size: 649598
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/17.yaml
   original:
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/8.yaml
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/17.yaml

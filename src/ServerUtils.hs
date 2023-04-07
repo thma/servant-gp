@@ -1,20 +1,17 @@
-{-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE OverloadedStrings #-}
---{-# LANGUAGE TypeOperators     #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE ExplicitNamespaces #-}
-{-# LANGUAGE ExistentialQuantification, DataKinds, PolyKinds, KindSignatures, GADTs #-}
-module ServerUtils 
+{-# LANGUAGE ExistentialQuantification, DataKinds, PolyKinds, GADTs #-}
+module ServerUtils
   (
     setUpSchema,
     mkApp,
-    throwAsServerError, 
+    throwAsServerError,
   )
 where
 import Models
 import Database.GP
 import Database.HDBC.Sqlite3
-import ConnectionPool
 import Servant
 import           Data.ByteString.Lazy.Char8     (pack)
 import           Control.Monad.Error.Class      (MonadError)
@@ -46,7 +43,9 @@ throwAsServerError pex = throwError $ case pex of
     format msg = pack $ "{ \"error\": \"" ++ msg ++ "\" }"
 
 -- | create an application from a db file name and a server
---mkApp :: FilePath -> Proxy api -> (ConnectionPool -> Server api) -> IO Application
 mkApp sqliteFile api serverFun = do
   pool <- sqlLitePool sqliteFile
   return $ serve api (serverFun pool)
+
+sqlLitePool :: FilePath -> IO ConnectionPool
+sqlLitePool sqlLiteFile = createConnPool SQLite sqlLiteFile connectSqlite3 10 10 100
