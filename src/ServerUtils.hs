@@ -48,4 +48,4 @@ mkApp sqliteFile api serverFun = do
   return $ serve api (serverFun pool)
 
 sqlLitePool :: FilePath -> IO ConnectionPool
-sqlLitePool sqlLiteFile = createConnPool SQLite sqlLiteFile connectSqlite3 10 10 100
+sqlLitePool sqlLiteFile = createConnPool SQLite sqlLiteFile connectSqlite3 10 100

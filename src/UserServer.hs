@@ -10,7 +10,7 @@ where
 
 import           Control.Exception              (try, throw)
 import           Control.Monad.IO.Class         (MonadIO (liftIO))
-import           Database.GP.GenericPersistence
+import           Database.GP
 import           Models
 import           Network.Wai.Handler.Warp       (run)
 import           Servant

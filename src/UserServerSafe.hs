@@ -42,7 +42,7 @@ userServer pool =
       where
         user = User idx "name" "email"
 
-    handleWithConn :: (Conn -> IO (Either PersistenceException a)) -> Handler a  -- :: (Conn -> IO a) -> Handler a
+    handleWithConn :: (Conn -> IO (Either PersistenceException a)) -> Handler a
     handleWithConn gpAction = do
       eitherExResult <- liftIO $ withResource pool gpAction
       case eitherExResult of

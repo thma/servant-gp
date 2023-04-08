@@ -12,16 +12,19 @@ packages:
   original:
     hackage: HDBC-sqlite3-2.3.3.1
 - completed:
-    commit: 44f6755bd135b420b32e2549215cfcea70dbba32
-    git: https://github.com/thma/generic-persistence.git
-    name: generic-persistence
+    hackage: resource-pool-0.4.0.0@sha256:9c1e448a159875e21a7e68697feee2b61a4e584720974fa465a2fa1bc0776c73,1342
     pantry-tree:
-      sha256: ce266e20f2fe8b14169d74fd7b450195224939333b105d23bdbb95bde5b6c555
-      size: 1714
-    version: 0.3.1.0
+      sha256: 1008fbb9b6bd9d12925989f2708af612daa3a8ebf3a56763016231461d9e314f
+      size: 406
   original:
-    commit: 44f6755bd135b420b32e2549215cfcea70dbba32
-    git: https://github.com/thma/generic-persistence.git
+    hackage: resource-pool-0.4.0.0
+- completed:
+    hackage: generic-persistence-0.4.0.0@sha256:79dabc380c5afe41e6a3fef478550e5e0332a3ccf9af1e458477bc8460f81cc3,2507
+    pantry-tree:
+      sha256: 5c9028e5ed55ecdf57712714a9c8fec8645347faae008009e55fd9cc38a5ee0a
+      size: 1253
+  original:
+    hackage: generic-persistence-0.4.0.0
 snapshots:
 - completed:
     sha256: 14ca51a9a597c32dd7804c10d079feea3d0ae40c5fbbb346cbd67b3ae49f6d01
