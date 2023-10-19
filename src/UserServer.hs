@@ -10,13 +10,12 @@ where
 
 import           Control.Exception              (try, throw)
 import           Control.Monad.IO.Class         (MonadIO (liftIO))
-import           Database.GP
+import           Database.GP                    hiding (run)
 import           Models
 import           Network.Wai.Handler.Warp       (run)
 import           Servant
 import           UserApi                        (UserAPI, userAPI)
 import           ServerUtils
-
 
 userServer :: ConnectionPool -> Server UserAPI
 userServer pool =
@@ -41,7 +40,7 @@ userServer pool =
     getUserCommentsH idx = handleWithConn $ \conn ->
       select conn (field "userRef" =. idx)             -- GET /users/{id}/comments
 
-    postUserH :: User -> Handler ()
+    postUserH :: User -> Handler User
     postUserH user = handleWithConn (`insert` user)    -- POST /users
     
     putUserH :: Id -> User -> Handler ()

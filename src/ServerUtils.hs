@@ -2,6 +2,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE ExplicitNamespaces #-}
 {-# LANGUAGE ExistentialQuantification, DataKinds, PolyKinds, GADTs #-}
+{-# OPTIONS_GHC -Wno-missing-signatures #-}
 module ServerUtils
   (
     setUpSchema,
@@ -18,10 +19,10 @@ import           Control.Monad.Error.Class      (MonadError)
 
 setUpSchema :: FilePath -> IO ()
 setUpSchema db = do
-  conn <- connect SQLite <$> connectSqlite3 db
-  setupTableFor @User conn
-  setupTableFor @BlogPost conn
-  setupTableFor @Comment conn
+  conn <- connect AutoCommit <$> connectSqlite3 db
+  setupTableFor @User SQLite conn
+  setupTableFor @BlogPost SQLite conn
+  setupTableFor @Comment SQLite conn
 
   let users = [User 1 "Alice" "alice@mail.com", User 2 "Bob" "bob@mail.com"]
   let posts = [BlogPost 1 1 "A text by Alice", BlogPost 2 2 "Bobs first post"]
@@ -42,10 +43,10 @@ throwAsServerError pex = throwError $ case pex of
   where
     format msg = pack $ "{ \"error\": \"" ++ msg ++ "\" }"
 
--- | create an application from a db file name and a server
+-- | create an application from a db file name and a server function
 mkApp sqliteFile api serverFun = do
   pool <- sqlLitePool sqliteFile
   return $ serve api (serverFun pool)
 
 sqlLitePool :: FilePath -> IO ConnectionPool
-sqlLitePool sqlLiteFile = createConnPool SQLite sqlLiteFile connectSqlite3 10 100
+sqlLitePool sqlLiteFile = createConnPool AutoCommit sqlLiteFile connectSqlite3 10 100

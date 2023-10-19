@@ -19,16 +19,15 @@ packages:
   original:
     hackage: resource-pool-0.4.0.0
 - completed:
-    hackage: generic-persistence-0.4.0.0@sha256:79dabc380c5afe41e6a3fef478550e5e0332a3ccf9af1e458477bc8460f81cc3,2507
+    hackage: generic-persistence-0.6.0@sha256:6ffb3fe9c1567cfb1ee81f966d29e4bc40574a97a407391f649deee3d60e4e0e,3269
     pantry-tree:
-      sha256: 5c9028e5ed55ecdf57712714a9c8fec8645347faae008009e55fd9cc38a5ee0a
-      size: 1253
+      sha256: f40892b293c98a5926b2ce12a025e00c4b85093b64cf09a54ae589f84ccef34f
+      size: 1563
   original:
-    hackage: generic-persistence-0.4.0.0
+    hackage: generic-persistence-0.6.0
 snapshots:
 - completed:
     sha256: 14ca51a9a597c32dd7804c10d079feea3d0ae40c5fbbb346cbd67b3ae49f6d01
     size: 649598
     url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/17.yaml
-  original:
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/17.yaml
+  original: lts-20.17

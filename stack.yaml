@@ -17,8 +17,8 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/17.yaml
+resolver: lts-20.17
+  #url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/17.yaml
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -38,7 +38,9 @@ packages:
 extra-deps:
   - HDBC-sqlite3-2.3.3.1   # not in lts-20.17
   - resource-pool-0.4.0.0  # 0.4 is not in lts-20.17
-  - generic-persistence-0.4.0.0 # not in lts-20.17
+  - generic-persistence-0.6.0 # not in lts-20.17
+
+
 # - git: https://github.com/thma/generic-persistence.git
 #   commit: 44f6755bd135b420b32e2549215cfcea70dbba32
 # - acme-missiles-0.3
@@ -71,3 +73,5 @@ extra-deps:
 #
 # Allow a newer minor version of GHC than the snapshot specifies
 # compiler-check: newer-minor
+
+

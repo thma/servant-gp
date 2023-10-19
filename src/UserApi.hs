@@ -27,7 +27,7 @@ type UserAPI = --Throws PersistenceException :>
                :> Get  '[ JSON] [Comment]
   :<|> "users" :> Summary "store a new user"
                :> ReqBody '[ JSON] User
-               :> Post '[ JSON] ()
+               :> Post '[ JSON] User
   :<|> "users" :> Summary "update existing user"
                :> Capture' '[Describe Id "unique User identifier"] ":id" Id
                :> ReqBody '[ JSON] User

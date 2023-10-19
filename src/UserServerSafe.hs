@@ -31,7 +31,7 @@ userServer pool =
     getUserCommentsH idx = handleWithConn $ \conn ->
       select conn (field "userRef" =. idx)             -- GET /users/{id}/comments
 
-    postUserH :: User -> Handler ()
+    postUserH :: User -> Handler User
     postUserH user = handleWithConn (`insert` user)    -- POST /users
     
     putUserH :: Id -> User -> Handler ()
