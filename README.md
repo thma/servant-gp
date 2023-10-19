@@ -1,6 +1,6 @@
 # servant-gp
 
-This is a demo project for [servant](https://haskell-servant.github.io/) and [generic-persistence](https://github.com/thma/GenericPersistence).
+This is a demo project for [servant](https://haskell-servant.github.io/) and [generic-persistence](https://github.com/thma/generic-persistence).
 
 It shows how to use servant to build a REST API for a simple persistence model.
 The Data is stored in a Sqlite database using generic-persistence as persistence layer.
