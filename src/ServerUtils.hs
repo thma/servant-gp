@@ -1,21 +1,25 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
-{-# LANGUAGE ExplicitNamespaces #-}
-{-# LANGUAGE ExistentialQuantification, DataKinds, PolyKinds, GADTs #-}
+{-# LANGUAGE DataKinds                 #-}
+{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE ExplicitNamespaces        #-}
+{-# LANGUAGE GADTs                     #-}
+{-# LANGUAGE OverloadedStrings         #-}
+{-# LANGUAGE PolyKinds                 #-}
 {-# OPTIONS_GHC -Wno-missing-signatures #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module ServerUtils
-  (
-    setUpSchema,
+  ( setUpSchema,
     mkApp,
     throwAsServerError,
   )
 where
-import Models
-import Database.GP
-import Database.HDBC.Sqlite3
-import Servant
-import           Data.ByteString.Lazy.Char8     (pack)
-import           Control.Monad.Error.Class      (MonadError)
+
+import           Control.Monad.Error.Class  (MonadError)
+import           Data.ByteString.Lazy.Char8 (pack)
+import           Database.GP
+import           Database.HDBC.Sqlite3
+import           Models
+import           Servant
 
 setUpSchema :: FilePath -> IO ()
 setUpSchema db = do

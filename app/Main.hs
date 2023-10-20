@@ -1,9 +1,9 @@
-module Main 
+module Main
   ( main,
   )
 where
 
-import           SwaggerEntityService
+import           SwaggerEntityService (up)
 
 main :: IO ()
 main = SwaggerEntityService.up

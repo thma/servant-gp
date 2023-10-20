@@ -12,3 +12,8 @@ The API is implemented in `src/UserServer.hs` (with the GP default API) and in `
 The `app/Main.hs` module contains the main function to start the server.
 
 `src/SwaggerEntityService` contains a servant-swagger module to generate a swagger API description.
+
+```bash
+ormolu -i ./**/*.hs
+stylish-haskell -i ./**/*.hs
+``````

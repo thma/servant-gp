@@ -9,9 +9,9 @@ module Models
   )
 where
 
-import           Data.Aeson ( FromJSON, ToJSON )
-import           Database.GP ( Entity (..) )  
-import           GHC.Generics ( Generic )
+import           Data.Aeson   (FromJSON, ToJSON)
+import           Database.GP  (Entity (..))
+import           GHC.Generics (Generic)
 
 type Id = Int
 
@@ -21,6 +21,7 @@ data User = User
     email  :: String
   }
   deriving (Show, Read, Generic, ToJSON, FromJSON)
+
 instance Entity User where
   autoIncrement = False
 
@@ -30,6 +31,7 @@ data BlogPost = BlogPost
     text    :: String
   }
   deriving (Show, Read, Generic, ToJSON, FromJSON)
+
 instance Entity BlogPost where
   autoIncrement = False
 
@@ -40,6 +42,6 @@ data Comment = Comment
     text      :: String
   }
   deriving (Show, Read, Generic, ToJSON, FromJSON)
+
 instance Entity Comment where
   autoIncrement = False
-

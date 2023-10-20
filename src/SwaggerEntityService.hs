@@ -14,17 +14,17 @@ where
 import           Control.Lens
 import           Data.Aeson               (toJSON)
 import           Data.Swagger             hiding (port)
+import           Database.GP              (ConnectionPool)
 import           Models
 import           Network.Wai.Handler.Warp (run)
 import           Servant
 import           Servant.Swagger
 import           Servant.Swagger.UI
+import           ServerUtils              (mkApp)
 import           System.Info              (os)
 import           System.Process           (createProcess, shell)
 import           UserApi                  (UserAPI, userAPI)
-import           UserServerSafe           
-import           ServerUtils              (mkApp)
-import           Database.GP              ( ConnectionPool )
+import           UserServerSafe
 
 -- | Swagger spec of Model type 'User'
 instance ToSchema User where
